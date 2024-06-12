@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: My360ImageViewer(),
+    );
+  }
+}
+
+class My360ImageViewer extends StatefulWidget {
+  @override
+  _My360ImageViewerState createState() => _My360ImageViewerState();
+}
+
+class _My360ImageViewerState extends State<My360ImageViewer> {
+  // URL of the 360-degree image
+  String imageUrl = "https://rukminim2.flixcart.com/image/416/416/xif0q/mobile/p/4/t/t2-pro-5g-v2321-vivo-original-imagtknhdfegg2dm.jpeg?q=70&crop=false";
+
+  // Initial position of the image
+  double horizontalOffset = 0.0;
+  double verticalOffset = 0.0;
+
+  // Function to handle horizontal swipe gestures
+  void handleHorizontalSwipe(DragUpdateDetails details) {
+    setState(() {
+      // Update horizontal image offset based on swipe direction
+      horizontalOffset += details.delta.dx;
+    });
+  }
+
+  // Function to handle vertical swipe gestures
+  void handleVerticalSwipe(DragUpdateDetails details) {
+    setState(() {
+      // Update vertical image offset based on swipe direction
+      verticalOffset += details.delta.dy;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('360 Image Viewer'),
+      ),
+      body: GestureDetector(
+        onHorizontalDragUpdate: handleHorizontalSwipe,
+        onVerticalDragUpdate: handleVerticalSwipe,
+        child: Center(
+          child: Transform(
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001) // Perspective
+              ..rotateX(verticalOffset / 200) // Vertical rotation
+              ..rotateY(horizontalOffset / 200), // Horizontal rotation
+            alignment: FractionalOffset.center,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
